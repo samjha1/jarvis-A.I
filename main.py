@@ -4,7 +4,7 @@ import webbrowser
 import openai
 from config import apikey
 import datetime
-import pyaudio
+import pyttsx3
 import random
 import numpy as np
 
@@ -27,7 +27,7 @@ def chat(query):
         presence_penalty=0
     )
     # todo: Wrap this inside of a  try catch block
-    say(response["choices"][0]["text"])
+    speak(response["choices"][0]["text"])
     chatStr += f"{response['choices'][0]['text']}\n"
     return response["choices"][0]["text"]
 
@@ -56,8 +56,13 @@ def ai(prompt):
         f.write(text)
 
 
-def say(text):
-    os.system(f'say "{text}"')
+def speak(text):
+    engine= pyttsx3.init()
+    voices = engine.getProperty('voices')
+    ID= r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0'
+    engine.setProperty('voice',ID)
+    engine.say(text=text)
+    engine.runAndWait()
 
 
 def takeCommand():
@@ -76,7 +81,7 @@ def takeCommand():
 
 if __name__ == '__main__':
     print('Welcome to Jarvis A.I')
-    say("Jarvis A.I")
+    speak("Jarvis A.I")
     while True:
         print("Listening...")
         query = takeCommand()
@@ -85,7 +90,7 @@ if __name__ == '__main__':
                  ["google", "https://www.google.com"], ]
         for site in sites:
             if f"Open {site[0]}".lower() in query.lower():
-                say(f"Opening {site[0]} sir...")
+                speak(f"Opening {site[0]} sir...")
                 webbrowser.open(site[1])
         # todo: Add a feature to play a specific song
         if "open music" in query:
@@ -96,7 +101,7 @@ if __name__ == '__main__':
             musicPath = "/Users/harry/Downloads/downfall-21371.mp3"
             hour = datetime.datetime.now().strftime("%H")
             min = datetime.datetime.now().strftime("%M")
-            say(f"Sir time is {hour} bajke {min} minutes")
+            speak(f"Sir time is {hour} bajke {min} minutes")
 
         elif "open facetime".lower() in query.lower():
             os.system(f"open /System/Applications/FaceTime.app")
@@ -117,4 +122,4 @@ if __name__ == '__main__':
             print("Chatting...")
             chat(query)
 
-    say(query)
+    speak(query)
